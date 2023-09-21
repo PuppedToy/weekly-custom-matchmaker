@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    Names <span id="namesPre"></span>: <div id="names"></div>
+    <button id="btn">Create</button>
+    <pre id="test"></pre>
+
+    <script>
+        function fillNamesPre(names) {
+            document.getElementsByTagName('input');
+            let checkedCount = 0;
+            for (let i = 0; i < names.length; i++) {
+                if (document.getElementById(names[i]).checked) {
+                    checkedCount++;
+                }
+            }
+            const extraValue = document.getElementById('others').value;
+            if (extraValue.trim()) {
+                const extra = extraValue.split(',');
+                checkedCount += extra.length;
+            }
+            document.getElementById('namesPre').innerHTML = `(${checkedCount}/${names.length} selected)`;
+        }
+
+        async function fillNames() {
+            const res = await fetch('/names');
+            const data = await res.json();
+            let html = "";
+            data.forEach(name => {
+                html = `${html}<p><input type="checkbox" id="${name}" value="${name}"> ${name}</p>`;
+            });
+            html = `${html}<p><input type="text" id="others" placeholder="name1,name2,..."></p>`;
+            document.getElementById('names').innerHTML = html;
+            fillNamesPre(data);
+            Array.from(document.getElementsByTagName('input')).forEach(input => {
+                input.addEventListener('change', () => {
+                    fillNamesPre(data);
+                });
+            });
+        }
+
+        async function execute() {
+            const names = Array.from(document.getElementsByTagName('input')).filter(input => input.checked).map(input => input.value);
+            const extraValue = document.getElementById('others').value;
+            if (extraValue.trim()) {
+                const extra = extraValue.split(',');
+                names.push(...extra);
+            }
+            
+            if (names.length !== 10) {
+                alert('Please select 10 names');
+            }
+
+            const res = await fetch('/match', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    names,
+                })
+            });
+
+            const data = await res.json();
+            document.getElementById('test').innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        fillNames();
+        document.getElementById('btn').addEventListener('click', execute);
+    </script>
+</body>
+</html>
