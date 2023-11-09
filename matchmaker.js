@@ -19,15 +19,17 @@ function matchmaker(names, data) {
     });
 
     let result;
-    let threshold = 20;
+    let threshold = 10;
     let count = 0;
-    const INCREMENT_COUNT = 20;
+    const INCREMENT_COUNT = 5;
+    let team1Total;
+    let team2Total;
     while(!result) {
         const blue = [];
         const red = [];
-        let team1Total = 0;
-        let team2Total = 0;
-
+        
+        team1Total = 0;
+        team2Total = 0;
         const randomlySortedNamesCopy = [...names];
         randomlySortedNamesCopy.sort(() => Math.random() - 0.5);
 
@@ -55,6 +57,8 @@ function matchmaker(names, data) {
         }
     }
 
+    console.log(`Blue total: ${team1Total}`);
+    console.log(`Red total: ${team2Total}`);
     return result;
 }
 

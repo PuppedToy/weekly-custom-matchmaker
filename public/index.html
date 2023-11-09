@@ -8,7 +8,7 @@
 <body>
     Names <span id="namesPre"></span>: <div id="names"></div>
     <button id="btn">Create</button>
-    <pre id="test"></pre>
+    <div id="test"></div>
 
     <script>
         function fillNamesPre(names) {
@@ -44,6 +44,12 @@
             });
         }
 
+        function createTeam(team) {
+            return `<ul>
+                ${team.map(name => `<li>${name}</li>`).join('')}
+            </ul>`;
+        }
+
         async function execute() {
             const names = Array.from(document.getElementsByTagName('input')).filter(input => input.checked).map(input => input.value);
             const extraValue = document.getElementById('others').value;
@@ -67,7 +73,10 @@
             });
 
             const data = await res.json();
-            document.getElementById('test').innerHTML = JSON.stringify(data, null, 2);
+            document.getElementById('test').innerHTML = `<p>Blue Team</p>
+            <p>${createTeam(data.team1)}</p>
+            <p>Red Team</p>
+            <p>${createTeam(data.team2)}</p>`;
         }
 
         fillNames();
